@@ -147,3 +147,9 @@ vite.config.ts.timestamp-*
 
 # Turbo Repo
 .turbo
+
+#Twitch dowloader
+TwitchDownloaderCLI-1.56.5-Windows-x64/
+
+#Claude
+Claude.md
