@@ -1,0 +1,24 @@
+{
+  "name": "twitchclipgenerator",
+  "version": "1.0.0",
+  "description": "> Finds the funny moments in a past Twitch stream so you don't have to rewatch three hours of it.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ro0oman/TwitchClipGenerator.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Ro0oman/TwitchClipGenerator/issues"
+  },
+  "homepage": "https://github.com/Ro0oman/TwitchClipGenerator#readme",
+  "devDependencies": {
+    "@types/node": "^26.6.4"
+  }
+}
