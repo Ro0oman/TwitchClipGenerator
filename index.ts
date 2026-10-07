@@ -12,7 +12,6 @@ type Commenter = {
 
 type Comentario = {
   content_offset_seconds: number;
-  commenter_name: number;
   commenter: Commenter;
   message: Message;
 };
@@ -23,8 +22,9 @@ type Chat = {
 
 const chat: Chat = JSON.parse(contenido);
 
+const mensajes = chat.comments.filter(c => c.commenter.display_name !== "nightbot");
 
-for (const comentario of chat.comments) {
+for (const comentario of mensajes) {
     console.log(`${comentario.commenter.display_name}=${comentario.message.body}`);
     
 }
