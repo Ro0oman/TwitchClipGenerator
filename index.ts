@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { retrieveStreamChat } from "./descargar.ts";
+import { retrieveStreamChat, retrieveClip } from "./descargar.ts";
 
 const VENTANA_SEGUNDOS = 30;
 const MARGEN_CLIP_ANTES = 15;
@@ -11,12 +11,14 @@ let contenido: string = "";
 
 //Check if arg provided is a JSON file or a ID
 try {
-  if (nombreFichero===undefined) {
-    console.error("No se ha proporcionado un ID o un nombre de fichero. Por favor proporcione un fichero con nombre valido por ejemplo: node index.ts sample.json o node index.ts 2886360563");   
+  if (nombreFichero === undefined) {
+    console.error(
+      "No se ha proporcionado un ID o un nombre de fichero. Por favor proporcione un fichero con nombre valido por ejemplo: node index.ts sample.json o node index.ts 2886360563",
+    );
     process.exit(1);
-  }else{
+  } else {
     if (!nombreFichero.endsWith(".json")) {
-        nombreFichero = await retrieveStreamChat(nombreFichero);
+      nombreFichero = await retrieveStreamChat(nombreFichero);
     }
   }
 } catch {
@@ -49,8 +51,14 @@ type Comentario = {
   message: Message;
 };
 
+type Video = {
+  title: string;
+  id: string;
+};
+
 type Chat = {
   comments: Comentario[];
+  video: Video;
 };
 
 function formatearTiempo(segundos: number): string {
@@ -76,6 +84,7 @@ const mensajesDeRisa = chatSinBots.filter((c) =>
 );
 
 let ultimaFechaRisa = 0;
+const idStream = chat.video.id
 
 for (const comentario of mensajesDeRisa) {
   const fechaClip = formatearTiempo(
@@ -102,6 +111,16 @@ for (const comentario of mensajesDeRisa) {
   ) {
     console.log(`Realizar clip desde ${fechaClip} hasta ${fechaHasta}
 Momentos clave:`);
+
+      try {
+        await retrieveClip(idStream, fechaClip, fechaHasta)
+      } catch (error) {
+         console.error(
+            `Descarga fallida`,
+          );
+          process.exit(1);
+      }
+
     enVentana.forEach((element) => {
       console.log(`   ${element.commenter.name}:${element.message.body}`);
     });
