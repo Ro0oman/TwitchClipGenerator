@@ -45,6 +45,12 @@ type Commenter = {
   name: string;
 };
 
+type Momento = {
+  inicio: string;
+  fin: string;
+  mensajes: Comentario[];
+};
+
 type Comentario = {
   content_offset_seconds: number;
   commenter: Commenter;
@@ -83,52 +89,67 @@ const mensajesDeRisa = chatSinBots.filter((c) =>
   patronMensajeDeRisa.test(c.message.body),
 );
 
-let ultimaFechaRisa = 0;
-const idStream = chat.video.id
+const idStream = chat.video.id;
 
-for (const comentario of mensajesDeRisa) {
-  const fechaClip = formatearTiempo(
-    Math.max(0, comentario.content_offset_seconds - MARGEN_CLIP_ANTES),
-  );
-  const fechaHasta = formatearTiempo(
-    comentario.content_offset_seconds + MARGEN_CLIP_DESPUES,
-  );
+function detectarMomentos(comentarios: Comentario[]) {
+  let ultimaFechaRisa = 0;
+  const momentos : Momento[] = []
+  for (const comentario of comentarios) {
+    const fechaClip = formatearTiempo(
+      Math.max(0, comentario.content_offset_seconds - MARGEN_CLIP_ANTES),
+    );
+    const fechaHasta = formatearTiempo(
+      comentario.content_offset_seconds + MARGEN_CLIP_DESPUES,
+    );
 
-  const fechaSinFormato = comentario.content_offset_seconds;
+    const fechaSinFormato = comentario.content_offset_seconds;
 
-  const enVentana = mensajesDeRisa.filter(
-    (m) =>
-      m.content_offset_seconds >= comentario.content_offset_seconds &&
-      m.content_offset_seconds <=
-        comentario.content_offset_seconds + VENTANA_SEGUNDOS,
-  );
+    const enVentana = comentarios.filter(
+      (m) =>
+        m.content_offset_seconds >= comentario.content_offset_seconds &&
+        m.content_offset_seconds <=
+          comentario.content_offset_seconds + VENTANA_SEGUNDOS,
+    );
 
-  const usuarios = new Set(enVentana.map((m) => m.commenter.name));
+    const usuarios = new Set(enVentana.map((m) => m.commenter.name));
 
-  if (
-    usuarios.size >= minUsuarios &&
-    fechaSinFormato - ultimaFechaRisa >= VENTANA_SEGUNDOS
-  ) {
-    console.log(`Realizar clip desde ${fechaClip} hasta ${fechaHasta}
-Momentos clave:`);
-
-      try {
-        await retrieveClip(idStream, fechaClip, fechaHasta)
-      } catch (error) {
-         console.error(
-            `Descarga fallida`,
-          );
-          process.exit(1);
+    if (
+      usuarios.size >= minUsuarios &&
+      fechaSinFormato - ultimaFechaRisa >= VENTANA_SEGUNDOS
+    ) {
+      momentos.push({
+          inicio: fechaClip,
+          fin: fechaHasta,
+          mensajes: enVentana
+        })
+      const ultimo = enVentana.at(-1);
+      if (ultimo !== undefined) {
+        ultimaFechaRisa = ultimo.content_offset_seconds;
       }
-
-    enVentana.forEach((element) => {
-      console.log(`   ${element.commenter.name}:${element.message.body}`);
-    });
-    console.log(`---------`);
-
-    const ultimo = enVentana.at(-1);
-    if (ultimo !== undefined) {
-      ultimaFechaRisa = ultimo.content_offset_seconds;
     }
   }
+  return momentos
 }
+
+function mostrarMomentos ( momentos : Momento[]){
+  momentos.forEach((element, index) => {
+    console.log('--------------------------');
+    console.log(`Listando momento gracioso [${element.inicio}-${element.fin}] `+(index+1));
+      element.mensajes.forEach((mensaje)=>{
+        console.log(`${mensaje.commenter.name}:${mensaje.message.body}`);
+      })
+  });
+}
+
+const momentos = detectarMomentos(mensajesDeRisa)
+mostrarMomentos(momentos)
+
+// for (const momento of momentos){
+//   try {
+//     await retrieveClip(idStream, momento.inicio, momento.fin);
+//   } catch {
+//     console.error(`Descarga fallida`);
+//     process.exit(1);
+//   }
+// }
+
