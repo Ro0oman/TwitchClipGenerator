@@ -1,8 +1,8 @@
-import { log } from 'node:console';
 import {readFile} from 'node:fs/promises';
 
 const VENTANA_SEGUNDOS = 30;
-const MARGEN_CLIP = 30
+const MARGEN_CLIP_ANTES = 15;
+const MARGEN_CLIP_DESPUES = 15;
 const MIN_USUARIOS_ABSOLUTO = 2;
 
 const contenido = await readFile('./sample.json', 'utf-8');
@@ -42,18 +42,33 @@ const minUsuarios = Math.max(MIN_USUARIOS_ABSOLUTO, Math.ceil(numeroUsuariosActi
 const patronMensajeDeRisa = /jaja|xd|lol/i
 const mensajesDeRisa = chatSinBots.filter( c => patronMensajeDeRisa.test(c.message.body));
 
+let ultimaFechaRisa = 0;
 
 for (const comentario of mensajesDeRisa) {
-    const fechaClip = formatearTiempo(Math.max(0, comentario.content_offset_seconds - MARGEN_CLIP))
-    const fechaRisa = formatearTiempo(comentario.content_offset_seconds)
+    const fechaClip = formatearTiempo(Math.max(0, comentario.content_offset_seconds - MARGEN_CLIP_ANTES))
+    const fechaHasta = formatearTiempo(comentario.content_offset_seconds + MARGEN_CLIP_DESPUES)
+
+    const fechaSinFormato = comentario.content_offset_seconds
 
     const enVentana = mensajesDeRisa.filter(m =>
         m.content_offset_seconds >= comentario.content_offset_seconds &&
         m.content_offset_seconds <= comentario.content_offset_seconds + VENTANA_SEGUNDOS
     );
 
+    const usuarios = new Set(enVentana.map(m=>m.commenter.name));      
     
+    if (usuarios.size>=minUsuarios && fechaSinFormato - ultimaFechaRisa >= VENTANA_SEGUNDOS) {
+        console.log(`Realizar clip desde ${fechaClip} hasta ${fechaHasta}
+Momentos clave:`);
+            enVentana.forEach(element => {
+                console.log(`   ${element.commenter.name}:${element.message.body}`);
+            });
+        console.log(`---------`);
+        
+        const ultimo = enVentana.at(-1); 
+        if (ultimo !== undefined) {
+            ultimaFechaRisa = ultimo.content_offset_seconds
+        }        
+    }
 
-
-    //console.log(`Hacer clip desde -> ${fechaClip} hasta ${fechaRisa.padEnd(25)} ->${comentario.commenter.name}=${comentario.message.body}`);
 }
