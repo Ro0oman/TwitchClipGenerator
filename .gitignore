@@ -151,5 +151,11 @@ vite.config.ts.timestamp-*
 #Twitch dowloader
 TwitchDownloaderCLI-1.56.5-Windows-x64/
 
+#Scratch folder
+scratch
+
+#Samples folder
+samples
+
 #Claude
 Claude.md

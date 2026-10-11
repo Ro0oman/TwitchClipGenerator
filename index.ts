@@ -5,7 +5,15 @@ const MARGEN_CLIP_ANTES = 15;
 const MARGEN_CLIP_DESPUES = 15;
 const MIN_USUARIOS_ABSOLUTO = 2;
 
-const contenido = await readFile('./sample.json', 'utf-8');
+const nombreFichero = process.argv[2]
+let contenido :string = ""
+
+try {
+    contenido = await readFile(nombreFichero, 'utf-8');
+} catch (error) {
+    console.log(`No se ha encontrado el fichero:  ${nombreFichero}. Por favor proporcione un fichero con nombre valido por ejemplo: node index.ts sample.json`);
+    process.exit(1)
+}
 
 type Message = {
     body: string
@@ -64,7 +72,7 @@ Momentos clave:`);
                 console.log(`   ${element.commenter.name}:${element.message.body}`);
             });
         console.log(`---------`);
-        
+
         const ultimo = enVentana.at(-1); 
         if (ultimo !== undefined) {
             ultimaFechaRisa = ultimo.content_offset_seconds
