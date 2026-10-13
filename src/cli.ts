@@ -1,11 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { retrieveStreamChat, retrieveClip } from "./descargar.ts";
-import {
-  detectarMomentos,
-  depurar,
-  leerChat
-} from "./analisis.ts";
-import type { Momento, Chat} from "./analisis.ts";
+import { detectarMomentos, depurar, leerChat } from "./analisis.ts";
+import type { Momento, Chat } from "./analisis.ts";
 
 let nombreFichero = process.argv[2];
 let contenido: string = "";
@@ -50,21 +46,16 @@ try {
   process.exit(1);
 }
 
-let chatLeido : Chat
+let chatLeido: Chat;
 
 try {
-    chatLeido = leerChat(contenido)
+  chatLeido = leerChat(contenido);
 } catch (error) {
-    console.error(
-        "La sintaxis del fichero JSON no es correcta."
-    );
-
-    if (error instanceof SyntaxError) {
-        console.error(`Detalle del error: ${error.message}`);
-    }
-    process.exit(1);
+  if (error instanceof SyntaxError) {
+    console.error(`Detalle del error: ${error.message}`);
+  }
+  process.exit(1);
 }
-
 
 const chatDepurado = depurar(chatLeido);
 mostrarMomentos(detectarMomentos(chatDepurado));
