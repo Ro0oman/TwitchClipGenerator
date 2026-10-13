@@ -30,9 +30,9 @@ A few lessons from real data that shape the design:
 ## Roadmap
 
 - [x] Download a VOD's chat with TwitchDownloaderCLI
-- [ ] Read the chat from Node + TypeScript
-- [ ] Filter bots and detect laughter
-- [ ] Launch the downloader from Node given a VOD ID
+- [x] Read the chat from Node + TypeScript
+- [x] Filter bots and detect laughter
+- [x] Launch the downloader from Node given a VOD ID
 - [ ] Audio signals (laughter, volume spikes)
 - [ ] Transcription with Whisper
 - [ ] LLM as a filter: rank candidates and suggest titles
