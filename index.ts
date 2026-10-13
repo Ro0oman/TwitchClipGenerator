@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { retrieveStreamChat, retrieveClip } from "./descargar.ts";
+import { retrieveStreamChat, retrieveClip } from "./src/descargar.ts";
 
 const VENTANA_SEGUNDOS = 30;
 const MARGEN_CLIP_ANTES = 15;
@@ -92,6 +92,8 @@ const mensajesDeRisa = chatSinBots.filter((c) =>
 const idStream = chat.video.id;
 
 function detectarMomentos(comentarios: Comentario[]) {
+  console.log(comentarios);
+  
   let ultimaFechaRisa = 0;
   const momentos : Momento[] = []
   for (const comentario of comentarios) {

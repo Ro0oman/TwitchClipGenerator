@@ -1,4 +1,4 @@
-import {retrieveStreamChat, retrieveClip} from './descargar.ts'
+import {retrieveStreamChat, retrieveClip} from './src/descargar.ts'
 
 // console.log(await retrieveStreamChat("2894278470"));
 
