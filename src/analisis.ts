@@ -43,7 +43,7 @@ function formatearTiempo(segundos: number): string {
   return fecha.toISOString().slice(11, 19);
 }
 
-export function leerChat(contenido: string): Chat {
+export function leerChat(contenido: string): Chat {    
   const resultado = ChatSchema.safeParse(JSON.parse(contenido));
   if (!resultado.success) {
     const errores = resultado.error.issues
@@ -80,12 +80,15 @@ export function depurar(chat: Chat): ChatDepurado {
     video: chat.video,
     minUsuarios: minUsuarios,
   };
-
+  
   return chatDepurado;
 }
 
 export function detectarMomentos(chatDepurado: ChatDepurado) {
-  const comentarios = chatDepurado.comments;
+
+  const chatOrdenado = chatDepurado.comments.toSorted((a, b)=> a.content_offset_seconds - b.content_offset_seconds) 
+    
+  const comentarios = chatOrdenado;
   let ultimaFechaRisa = 0;
   const momentos: Momento[] = [];
   for (const comentario of comentarios) {
@@ -125,5 +128,6 @@ export function detectarMomentos(chatDepurado: ChatDepurado) {
       }
     }
   }
+
   return momentos;
 }
